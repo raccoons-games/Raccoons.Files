@@ -4,24 +4,36 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Raccoons.Files
 {
-    [CreateAssetMenu(fileName = "PathFileReader", menuName = "Raccoons/Files/PathFileReader")]
-    public class PathFileReader : BaseFileReader
+    public class PathFileReader : BasePathFileReader
     {
-        [SerializeField]
-        private string filePath;
+        public PathFileReader(string filePath) : base(filePath)
+        {
+        }
 
-        public virtual string FilePath { get => filePath; }
+        public override StreamReader CreateStreamReader()
+        {
+            return new StreamReader(FilePath);
+        }
 
-        public override string ReadAll()
+        public override byte[] ReadAllBytes()
+        {
+            return File.ReadAllBytes(FilePath);
+        }
+
+        public override Task<byte[]> ReadAllBytesAsync(CancellationToken cancellationToken = default)
+        {
+            return File.ReadAllBytesAsync(FilePath);
+        }
+
+        public override string ReadAllText()
         {
             return File.ReadAllText(FilePath);
         }
 
-        public override Task<string> ReadAllAsync(CancellationToken cancellationToken = default)
+        public override Task<string> ReadAllTextAsync(CancellationToken cancellationToken = default)
         {
             return File.ReadAllTextAsync(FilePath, cancellationToken);
         }

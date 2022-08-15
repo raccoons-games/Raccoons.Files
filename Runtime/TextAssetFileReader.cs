@@ -1,24 +1,42 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Raccoons.Files
 {
-    [CreateAssetMenu(fileName = "PathFileReader", menuName = "Raccoons/Files/TextAssetInstance")]
-    public class TextAssetFileReader : BaseFileReader
+    public class TextAssetFileReader : IFileReader
     {
-        [SerializeField]
-        private TextAsset textAsset;
+        private TextAsset _textAsset;
 
-        public override string ReadAll()
+        public TextAssetFileReader(TextAsset textAsset)
         {
-            return textAsset.text;
+            _textAsset = textAsset;
         }
 
-        public override Task<string> ReadAllAsync(CancellationToken cancellationToken = default)
+        public Task<byte[]> ReadAllBytesAsync(CancellationToken cancellationToken = default)
         {
-            
-            return Task.FromResult(ReadAll());
+            return Task.FromResult(ReadAllBytes());
+        }
+
+        public byte[] ReadAllBytes()
+        {
+            return _textAsset.bytes;
+        }
+
+        public string ReadAllText()
+        {
+            return _textAsset.text;
+        }
+
+        public Task<string> ReadAllTextAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(ReadAllText());
+        }
+
+        public StreamReader CreateStreamReader()
+        {
+            return new StreamReader(new MemoryStream(ReadAllBytes()));
         }
     }
 }
